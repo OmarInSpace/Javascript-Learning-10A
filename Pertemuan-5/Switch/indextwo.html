@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FC Ultimate Squad Builder</title>
+    <!-- Tailwind CSS -->
+    <script src="https://tailwindcss.com"></script>
+    <style>
+        @import url('https://googleapis.com');
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: radial-gradient(circle at center, #1e1b4b 0%, #090514 100%);
+        }
+        .font-game { font-family: 'Orbitron', sans-serif; }
+        .font-logo { font-family: 'Bangers', cursive; }
+
+        /* Lapangan 3D Perspektif */
+        .pitch-container {
+            perspective: 1000px;
+        }
+        .pitch-3d {
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.15) 0%, rgba(4, 120, 87, 0.3) 100%);
+            border: 3px solid #10b981;
+            box-shadow: 0 0 40px rgba(16, 185, 129, 0.2), inset 0 0 40px rgba(16, 185, 129, 0.2);
+            transform: rotateX(15deg);
+            transform-style: preserve-3d;
+            position: relative;
+        }
+        .pitch-line {
+            position: absolute;
+            left: 0; right: 0; height: 2px;
+            background: rgba(16, 185, 129, 0.4);
+            top: 50%; transform: translateY(-50%);
+        }
+        .pitch-circle {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px; height: 120px;
+            border: 2px solid rgba(16, 185, 129, 0.4);
+            border-radius: 50%;
+        }
+
+        /* Efek Glow Kartu EA FC */
+        .fc-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateZ(20px);
+        }
+        .fc-card.active-fw { border: 2px solid #fbbf24; box-shadow: 0 0 25px rgba(251, 191, 36, 0.4); }
+        .fc-card.active-mf { border: 2px solid #3b82f6; box-shadow: 0 0 25px rgba(59, 130, 246, 0.4); }
+        .fc-card.active-df { border: 2px solid #10b981; box-shadow: 0 0 25px rgba(16, 185, 129, 0.4); }
+        .fc-card.active-gk { border: 2px solid #a855f7; box-shadow: 0 0 25px rgba(168, 85, 247, 0.4); }
+    </style>
+</head>
+<body class="text-white min-h-screen p-4 md:p-8 flex items-center justify-center">
+
+    <div class="w-full max-w-6xl bg-black/40 backdrop-blur-md rounded-3xl p-6 md:p-8 border border-white/10 shadow-2xl">
+        
+        <!-- Header Mode Game -->
+        <header class="flex flex-col md:flex-row justify-between items-center border-b border-white/10 pb-6 mb-8 gap-4">
+            <div>
+                <h1 class="text-4xl md:text-5xl font-logo tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-amber-500 to-red-500 uppercase">
+                    🏆 SQUAD SHOWDOWN
+                </h1>
+                <p class="text-slate-400 text-sm font-medium tracking-widest uppercase">EA TACTICS MANAGEMENT PRO</p>
+            </div>
+            <!-- Live Tactic Style -->
+            <div class="bg-gradient-to-r from-red-600 to-amber-600 px-6 py-2 rounded-xl border border-yellow-500/30 text-center shadow-lg shadow-red-900/40">
+                <span class="text-xs uppercase tracking-widest text-yellow-300 font-bold block">Gaya Taktik</span>
+                <span id="tacticStyle" class="font-game font-bold text-lg">BELUM MEMILIH</span>
+            </div>
+        </header>
+
+        <!-- Tata Letak Utama -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- PANEL KONTROL KIRI -->
+            <div class="lg:col-span-4 bg-slate-900/80 p-6 rounded-2xl border border-white/5 flex flex-col gap-6 shadow-xl">
+                <div>
+                    <h2 class="text-lg font-game font-bold text-yellow-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <span>⚡</span> TRANSFER HUB
+                    </h2>
+                    
+                    <!-- Pilihan Penyerang -->
+                    <div class="mb-4">
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1 tracking-wider">Mata Tombak (ST)</label>
+                        <select id="fwSelect" onchange="buildSquad()" class="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-yellow-400 outline-none font-medium cursor-pointer">
+                            <option value="">[ Pilih Penyerang ]</option>
+                            <option value="cr7">Cristiano Ronaldo (🇵🇹)</option>
+                            <option value="mbappe">Kylian Mbappé (🇫🇷)</option>
+                        </select>
+                    </div>
+
+                    <!-- Pilihan Gelandang -->
+                    <div class="mb-4">
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1 tracking-wider">Jenderal Lapangan (CAM)</label>
+                        <select id="mfSelect" onchange="buildSquad()" class="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-blue-400 outline-none font-medium cursor-pointer">
+                            <option value="">[ Pilih Gelandang ]</option>
+                            <option value="kdb">Kevin De Bruyne (🇧🇪)</option>
+                            <option value="bellingham">Jude Bellingham (🏴󠁧󠁢󠁥󠁮󠁧󠁿)</option>
+                        </select>
+                    </div>
+
+                    <!-- Pilihan Bek -->
+                    <div class="mb-4">
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1 tracking-wider">Tembok Pertahanan (CB)</label>
+                        <select id="dfSelect" onchange="buildSquad()" class="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-emerald-400 outline-none font-medium cursor-pointer">
+                            <option value="">[ Pilih Bek ]</option>
+                            <option value="vvd">Virgil van Dijk (🇳🇱)</option>
+                            <option value="rudiger">Antonio Rüdiger (🇩🇪)</option>
+                        </select>
+                    </div>
+
+                    <!-- Pilihan Kiper -->
+                    <div class="mb-4">
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1 tracking-wider">Penjaga Gawang (GK)</label>
+                        <select id="gkSelect" onchange="buildSquad()" class="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:border-purple-400 outline-none font-medium cursor-pointer">
+                            <option value="">[ Pilih Kiper ]</option>
+                            <option value="courtois">Thibaut Courtois (🇧🇪)</option>
+                            <option value="alisson">Alisson Becker (🇧🇷)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- OVERALL STATS RADAR -->
+                <div class="bg-black/40 p-4 rounded-xl border border-white/5 space-y-4">
+                    <h3 class="text-xs font-game font-bold text-slate-400 uppercase tracking-widest">Team Performance Rating</h3>
+                    <div>
+                        <div class="flex justify-between text-sm font-bold mb-1"><span class="text-amber-400">⚔️ ATTACK POWER</span><span id="atkVal" class="font-game">0</span></div>
+                        <div class="w-full bg-slate-950 h-3 rounded-full p-[2px] border border-white/5"><div id="atkBar" class="bg-gradient-to-r from-amber-500 to-yellow-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div></div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm font-bold mb-1"><span class="text-emerald-400">🛡️ DEFENSE SHIELD</span><span id="defVal" class="font-game">0</span></div>
+                        <div class="w-full bg-slate-950 h-3 rounded-full p-[2px] border border-white/5"><div id="defBar" class="bg-gradient-to-r from-emerald-600 to-teal-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LAPANGAN TAKTIK KANAN (3D STYLE) -->
+            <div class="lg:col-span-8 pitch-container w-full flex justify-center py-6">
+                <div class="pitch-3d w-full max-w-[500px] aspect-[4/5] rounded-3xl p-6 flex flex-col justify-between items-center shadow-2xl">
+                    <div class="pitch-line"></div>
+                    <div class="pitch-circle"></div>
+                    
+                    <!-- SLOT STRIKER -->
+                    <div class="z-45 transform -translate-y-2">
+                        <div id="card-fw" class="fc-card border border-white/10 w-28 md:w-32 aspect-[2/3] rounded-xl flex flex-col justify-between p-2 text-center opacity-35 scale-95">
+                            <div class="flex justify-between items-start">
+                                <span id="ovr-fw" class="font-game text-xl md:text-2xl font-black text-yellow-400">--</span>
+                                <span id="pos-fw" class="text-[10px] font-bold bg-yellow-400/20 text-yellow-300 px-1 rounded">ST</span>
+                            </div>
+                            <div class="my-auto">
+                                <div id="name-fw" class="font-game text-xs md:text-sm font-black tracking-wide truncate uppercase">KOSONG</div>
+                                <div id="club-fw" class="text-[9px] text-slate-400 font-semibold mt-0.5 truncate">-</div>
+                            </div>
+</body>

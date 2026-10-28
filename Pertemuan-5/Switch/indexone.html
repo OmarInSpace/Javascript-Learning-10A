@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analisis Pemain Sepak Bola - Switch JS</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #1e293b;
+            color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background-color: #0f172a;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            text-align: center;
+            max-width: 450px;
+            width: 100%;
+            border: 2px solid #38bdf8;
+        }
+        h2 {
+            margin-top: 0;
+            color: #38bdf8;
+            letter-spacing: 1px;
+        }
+        select {
+            padding: 12px;
+            font-size: 16px;
+            background-color: #1e293b;
+            color: #fff;
+            border: 2px solid #475569;
+            border-radius: 8px;
+            width: 100%;
+            cursor: pointer;
+            outline: none;
+            margin-bottom: 20px;
+        }
+        select:focus {
+            border-color: #38bdf8;
+        }
+        .player-info {
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #1e293b;
+            border-left: 5px solid #64748b;
+            text-align: left;
+            min-height: 120px;
+            transition: all 0.3s ease;
+        }
+        .role {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .desc {
+            font-size: 14px;
+            color: #cbd5e1;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Analisis Taktis Pemain</h2>
+    <p>Pilih pemain untuk melihat posisi dan gaya mainnya:</p>
+    
+    <!-- Dropdown Interaktif Nama Pemain -->
+    <select id="playerSelect" onchange="analisisPemain()">
+        <option value="">-- Pilih Pemain --</option>
+        <option value="cr7">Cristiano Ronaldo</option>
+        <option value="messi">Lionel Messi</option>
+        <option value="kdb">Kevin De Bruyne</option>
+        <option value="vvd">Virgil van Dijk</option>
+    </select>
+
+    <!-- Kotak Hasil Analisis -->
+    <div class="player-info" id="infoBox">
+        <div class="role" id="playerRole">Menunggu Pilihan...</div>
+        <div class="desc" id="playerDesc">Silakan pilih salah satu pemain bintang di atas untuk memicu logika switch case.</div>
+    </div>
+</div>
+
+<script src="scriptone.js"></script>
